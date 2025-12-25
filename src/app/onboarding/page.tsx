@@ -1,5 +1,3 @@
-"use client";
-
 import { WorkflowContainer } from "@/features/onboarding";
 
 export default function OnboardingPage() {

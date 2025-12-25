@@ -1,5 +1,6 @@
 "use client";
 
+import { Check } from "lucide-react";
 import { useStepNavigation } from "../hooks/use-step-navigation";
 import { Step1PersonalInfo } from "./step-1-personal-info";
 import { Step2ProfessionalDetails } from "./step-2-professional-details";
@@ -18,9 +19,7 @@ export function WorkflowContainer() {
   const { currentStep } = useStepNavigation();
   const { completion } = useApplicationStore();
 
-  const getStepStatus = (
-    step: number
-  ): "completed" | "current" | "pending" => {
+  const getStepStatus = (step: number): "completed" | "current" | "pending" => {
     if (step < currentStep) return "completed";
     if (step === currentStep) return "current";
     return "pending";
@@ -51,20 +50,7 @@ export function WorkflowContainer() {
                     aria-current={status === "current" ? "step" : undefined}
                   >
                     {isCompleted && status !== "current" ? (
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                      <Check className="w-6 h-6" aria-hidden="true" />
                     ) : (
                       step
                     )}
@@ -111,4 +97,3 @@ export function WorkflowContainer() {
     </div>
   );
 }
-
