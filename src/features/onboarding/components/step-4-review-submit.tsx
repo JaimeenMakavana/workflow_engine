@@ -80,7 +80,9 @@ export function Step4ReviewSubmit() {
         );
       }
     } catch (error) {
-      setSubmitError((error as Error).message || "An unexpected error occurred");
+      setSubmitError(
+        (error as Error).message || "An unexpected error occurred"
+      );
     } finally {
       setSubmitting(false);
     }
@@ -283,4 +285,3 @@ export function Step4ReviewSubmit() {
     </div>
   );
 }
-
