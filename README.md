@@ -5,30 +5,35 @@ A production-grade, multi-step job application system built with Next.js 16, Rea
 ## Features
 
 ### ✅ Multi-Step Form Flow
+
 - **Step 1: Personal Information** - Name, email, phone, country
 - **Step 2: Professional Details** - Experience, skills, current role, notice period
 - **Step 3: Documents** - Resume upload (required), optional cover letter
 - **Step 4: Review & Submit** - Complete review with edit navigation
 
 ### ✅ State Management
+
 - **URL Sync**: Step navigation synced with query parameters (`/onboarding?step=2`)
 - **Session Storage**: Auto-saves after each step completion
 - **Global Store**: Zustand store for centralized state management
 - **Local Buffering**: Form state managed locally to prevent unnecessary re-renders
 
 ### ✅ Validation
+
 - **Zod Schemas**: Step-specific validation rules
 - **Real-time Validation**: Form validation on change
 - **Error Handling**: User-friendly error messages with ARIA labels
 - **Conditional Logic**: Internship disclaimer for < 1 year experience
 
 ### ✅ Async Behavior & Error Handling
+
 - **Retry Logic**: Exponential backoff for failed submissions
 - **Error Modes**: Handles network errors, timeouts, validation errors, server errors
 - **Loading States**: Clear feedback during submission
 - **Data Preservation**: Form data preserved on errors
 
 ### ✅ Accessibility
+
 - **ARIA Labels**: All inputs properly labeled
 - **Error Announcements**: Screen reader friendly error messages
 - **Keyboard Navigation**: Full keyboard support
@@ -36,6 +41,7 @@ A production-grade, multi-step job application system built with Next.js 16, Rea
 - **Semantic HTML**: Proper use of form elements and landmarks
 
 ### ✅ Architecture Highlights
+
 - **Separation of Concerns**: Validation logic separated from UI
 - **Testable Design**: Validation and state management can be tested independently
 - **Type Safety**: Full TypeScript support
@@ -50,6 +56,9 @@ A production-grade, multi-step job application system built with Next.js 16, Rea
 - **Zustand** - Global state management
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Styling
+- **Jest** - Testing framework
+- **React Testing Library** - Component testing utilities
+- **Radix UI** - Accessible component primitives
 
 ## Getting Started
 
@@ -74,6 +83,21 @@ npm run build
 npm start
 ```
 
+### Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+See [TESTING.md](./TESTING.md) for detailed testing strategy and guidelines.
+
 ## Project Structure
 
 Following feature-based architecture best practices:
@@ -83,21 +107,36 @@ workflow_engine/
 ├── src/
 │   ├── app/                          # Next.js App Router
 │   │   ├── onboarding/
-│   │   │   └── page.tsx              # Onboarding page
+│   │   │   ├── page.tsx              # Onboarding page
+│   │   │   └── loading.tsx           # Loading state
 │   │   ├── layout.tsx                # Root layout
 │   │   ├── page.tsx                  # Home page (redirects)
 │   │   └── globals.css               # Global styles
-│   ├── components/                    # Shared/Global UI components
-│   │   └── (empty - for future shared components)
+│   ├── components/                   # Shared/Global UI components
+│   │   └── ui/                       # Reusable UI primitives
+│   │       ├── button.tsx
+│   │       ├── form-field.tsx
+│   │       ├── input.tsx
+│   │       ├── label.tsx
+│   │       ├── select.tsx
+│   │       └── select-field.tsx
 │   ├── features/                     # Feature-based modules
 │   │   └── onboarding/               # Onboarding feature
+│   │       ├── __tests__/            # Feature-level tests
+│   │       │   └── schemas.test.ts   # Validation schema tests
 │   │       ├── api/                  # API/Service layer
+│   │       │   ├── __tests__/
+│   │       │   │   └── submission.test.ts  # Integration tests
 │   │       │   └── submission.ts     # Submission logic with retry
 │   │       ├── components/           # Feature-specific components
+│   │       │   ├── __tests__/
+│   │       │   │   ├── accessibility.test.tsx
+│   │       │   │   └── step-navigation.test.tsx
 │   │       │   ├── step-1-personal-info.tsx
 │   │       │   ├── step-2-professional-details.tsx
 │   │       │   ├── step-3-documents.tsx
 │   │       │   ├── step-4-review-submit.tsx
+│   │       │   ├── progress-indicator.tsx
 │   │       │   └── workflow-container.tsx
 │   │       ├── hooks/                # Feature-specific hooks
 │   │       │   └── use-step-navigation.ts
@@ -106,9 +145,12 @@ workflow_engine/
 │   │       │   └── schemas.ts        # Zod validation schemas
 │   │       └── index.ts              # Public API (barrel export)
 │   ├── hooks/                        # Global hooks (if any)
-│   ├── lib/                          # Third-party configs
-│   │   └── store/
-│   │       └── application-store.ts  # Zustand store
+│   ├── lib/                          # Third-party configs & utilities
+│   │   ├── store/
+│   │   │   ├── __tests__/
+│   │   │   │   └── application-store.test.ts  # Store tests
+│   │   │   └── application-store.ts  # Zustand store
+│   │   └── utils.ts                  # Utility functions
 │   ├── utils/                        # Pure helper functions
 │   └── types/                        # Global TypeScript definitions
 ```
@@ -116,28 +158,57 @@ workflow_engine/
 ## Key Design Decisions
 
 ### State Management Pattern
+
 - **Global Store (Zustand)**: Holds the "Master Record" of all completed steps
 - **Local Hook (useState)**: Holds the "Draft" data for the current active step
 - **Why?** Prevents global re-renders on every keystroke while preserving data when navigating between steps
 
 ### URL Sync
+
 - Step navigation is synced with URL query parameters
 - Allows deep linking and browser back/forward navigation
 - State persists in sessionStorage for recovery on refresh
 
 ### Validation Architecture
+
 - Validation logic is completely separated from UI components
 - Zod schemas can be tested independently
 - React Hook Form integrates with Zod via `@hookform/resolvers`
 
 ### File Upload Handling
+
 - Files are stored in component state (not persisted to sessionStorage)
 - File validation happens via Zod schema
 - File size and type restrictions enforced
 
-## Testing the Error Handling
+## Testing
+
+This project follows a **contract-based testing approach** focused on protecting behavior contracts rather than achieving coverage metrics.
+
+### Test Coverage
+
+✅ **Unit Tests**
+
+- Validation schema tests (`schemas.test.ts`)
+- Derived state logic tests (`application-store.test.ts`)
+
+✅ **Component Tests**
+
+- Step navigation behavior (`step-navigation.test.tsx`)
+- Accessibility compliance (`accessibility.test.tsx`)
+
+✅ **Integration Tests**
+
+- API submission flow with retry logic (`submission.test.ts`)
+
+### Testing Strategy
+
+See [TESTING.md](./TESTING.md) for the complete testing philosophy, guidelines, and best practices.
+
+### Error Handling Testing
 
 The submission function includes simulated failure modes for testing:
+
 - 10% chance of network error
 - 5% chance of timeout
 - 5% chance of validation error
@@ -148,9 +219,7 @@ Retry logic with exponential backoff handles transient failures.
 
 ## Future Enhancements
 
-- [ ] Add unit tests for validation schemas
-- [ ] Add integration tests for form flows
-- [ ] Add E2E tests with Playwright
+- [ ] Add E2E tests with Playwright (critical flows only)
 - [ ] Implement file upload to actual backend
 - [ ] Add progress persistence across browser sessions
 - [ ] Add form analytics
