@@ -19,9 +19,7 @@ export function ProgressIndicator({
   currentStep,
   completion,
 }: ProgressIndicatorProps) {
-  const getStepStatus = (
-    step: number
-  ): "completed" | "current" | "pending" => {
+  const getStepStatus = (step: number): "completed" | "current" | "pending" => {
     if (step < currentStep) return "completed";
     if (step === currentStep) return "current";
     return "pending";
@@ -78,4 +76,3 @@ export function ProgressIndicator({
     </div>
   );
 }
-

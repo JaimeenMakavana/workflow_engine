@@ -6,6 +6,8 @@ import { documentsSchema, type DocumentsFormData } from "../types/schemas";
 import { useApplicationStore } from "@/lib/store/application-store";
 import { useStepNavigation } from "../hooks/use-step-navigation";
 import { useEffect, useRef } from "react";
+import { FormField, FormInput } from "@/components/ui/form-field";
+import { Button } from "@/components/ui/button";
 
 export function Step3Documents() {
   const { data, setDocuments } = useApplicationStore();
@@ -14,18 +16,16 @@ export function Step3Documents() {
   const coverLetterInputRef = useRef<HTMLInputElement>(null);
 
   const {
-    register,
     handleSubmit,
     formState: { errors, isSubmitting, isValid },
     setValue,
     watch,
-    setError,
     clearErrors,
   } = useForm<DocumentsFormData>({
     resolver: zodResolver(documentsSchema),
     mode: "onChange",
     defaultValues: {
-      resume: undefined as any, // Will be set when file is selected
+      resume: undefined as File | undefined, // Will be set when file is selected
       coverLetter: null,
     },
   });
@@ -48,11 +48,9 @@ export function Step3Documents() {
     const file = event.target.files?.[0];
     if (file) {
       clearErrors(field);
-      setValue(
-        field,
-        field === "coverLetter" && !file ? null : file,
-        { shouldValidate: true }
-      );
+      setValue(field, field === "coverLetter" && !file ? null : file, {
+        shouldValidate: true,
+      });
     } else if (field === "coverLetter") {
       setValue(field, null, { shouldValidate: true });
     }
@@ -74,39 +72,24 @@ export function Step3Documents() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
-      <div>
-        <label
-          htmlFor="resume"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Resume (PDF) <span className="text-red-500">*</span>
-        </label>
-        <input
+      <FormField
+        label="Resume (PDF)"
+        required
+        htmlFor="resume"
+        error={errors.resume?.message}
+        helpText="Maximum file size: 5MB. PDF format only."
+      >
+        <FormInput
           id="resume"
           type="file"
           accept=".pdf,application/pdf"
           ref={resumeInputRef}
           onChange={(e) => handleFileChange("resume", e)}
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.resume ? "border-red-500" : "border-gray-300"
-          }`}
-          aria-invalid={errors.resume ? "true" : "false"}
+          error={!!errors.resume}
           aria-describedby={
             errors.resume ? "resume-error resume-help" : "resume-help"
           }
         />
-        <p id="resume-help" className="mt-1 text-sm text-gray-500">
-          Maximum file size: 5MB. PDF format only.
-        </p>
-        {errors.resume && (
-          <p
-            id="resume-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
-            {errors.resume.message}
-          </p>
-        )}
         {resumeFile && (
           <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
             <p className="text-sm text-green-800">
@@ -114,43 +97,34 @@ export function Step3Documents() {
             </p>
           </div>
         )}
-      </div>
+      </FormField>
 
-      <div>
-        <label
-          htmlFor="coverLetter"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Cover Letter (PDF) <span className="text-gray-500">(Optional)</span>
-        </label>
-        <input
+      <FormField
+        label={
+          <>
+            Cover Letter (PDF){" "}
+            <span className="text-muted-foreground font-normal">
+              (Optional)
+            </span>
+          </>
+        }
+        htmlFor="coverLetter"
+        error={errors.coverLetter?.message}
+        helpText="Maximum file size: 5MB. PDF format only."
+      >
+        <FormInput
           id="coverLetter"
           type="file"
           accept=".pdf,application/pdf"
           ref={coverLetterInputRef}
           onChange={(e) => handleFileChange("coverLetter", e)}
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.coverLetter ? "border-red-500" : "border-gray-300"
-          }`}
-          aria-invalid={errors.coverLetter ? "true" : "false"}
+          error={!!errors.coverLetter}
           aria-describedby={
             errors.coverLetter
               ? "coverLetter-error coverLetter-help"
               : "coverLetter-help"
           }
         />
-        <p id="coverLetter-help" className="mt-1 text-sm text-gray-500">
-          Maximum file size: 5MB. PDF format only.
-        </p>
-        {errors.coverLetter && (
-          <p
-            id="coverLetter-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
-            {errors.coverLetter.message}
-          </p>
-        )}
         {coverLetterFile && (
           <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
             <p className="text-sm text-green-800">
@@ -159,26 +133,20 @@ export function Step3Documents() {
             </p>
           </div>
         )}
-      </div>
+      </FormField>
 
       <div className="flex justify-between pt-4">
-        <button
-          type="button"
-          onClick={goToPreviousStep}
-          className="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-        >
+        <Button type="button" variant="outline" onClick={goToPreviousStep}>
           Previous
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
           disabled={isSubmitting || !isValid}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           aria-disabled={isSubmitting || !isValid}
         >
           {isSubmitting ? "Saving..." : "Next"}
-        </button>
+        </Button>
       </div>
     </form>
   );
 }
-

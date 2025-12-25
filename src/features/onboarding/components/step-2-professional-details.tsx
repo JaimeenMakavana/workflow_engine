@@ -9,6 +9,10 @@ import {
 import { useApplicationStore } from "@/lib/store/application-store";
 import { useStepNavigation } from "../hooks/use-step-navigation";
 import { useEffect } from "react";
+import { FormField, FormInput } from "@/components/ui/form-field";
+import { SelectField } from "@/components/ui/select-field";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 const SKILLS = [
   "JavaScript",
@@ -94,38 +98,22 @@ export function Step2ProfessionalDetails() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
-      <div>
-        <label
-          htmlFor="yearsOfExperience"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Years of Experience <span className="text-red-500">*</span>
-        </label>
-        <input
+      <FormField
+        label="Years of Experience"
+        required
+        htmlFor="yearsOfExperience"
+        error={errors.yearsOfExperience?.message}
+      >
+        <FormInput
           id="yearsOfExperience"
           type="number"
           min="0"
           max="50"
           step="0.5"
           {...register("yearsOfExperience", { valueAsNumber: true })}
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.yearsOfExperience ? "border-red-500" : "border-gray-300"
-          }`}
-          aria-invalid={errors.yearsOfExperience ? "true" : "false"}
-          aria-describedby={
-            errors.yearsOfExperience ? "yearsOfExperience-error" : undefined
-          }
+          error={!!errors.yearsOfExperience}
         />
-        {errors.yearsOfExperience && (
-          <p
-            id="yearsOfExperience-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
-            {errors.yearsOfExperience.message}
-          </p>
-        )}
-      </div>
+      </FormField>
 
       {showInternshipDisclaimer && (
         <div
@@ -141,25 +129,25 @@ export function Step2ProfessionalDetails() {
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <Label className="mb-2">
           Skills <span className="text-red-500">*</span>
-        </label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 border border-gray-300 rounded-md p-4 max-h-64 overflow-y-auto">
+        </Label>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 border border-input rounded-md p-4 max-h-64 overflow-y-auto">
           {SKILLS.map((skill) => {
             const isSelected = selectedSkills.includes(skill);
             return (
               <label
                 key={skill}
-                className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                className="flex items-center space-x-2 cursor-pointer hover:bg-accent p-2 rounded"
               >
                 <input
                   type="checkbox"
                   checked={isSelected}
                   onChange={() => handleSkillToggle(skill)}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-primary border-input rounded focus:ring-ring"
                   aria-label={`Select ${skill}`}
                 />
-                <span className="text-sm text-gray-700">{skill}</span>
+                <span className="text-sm">{skill}</span>
               </label>
             );
           })}
@@ -171,53 +159,30 @@ export function Step2ProfessionalDetails() {
         )}
       </div>
 
-      <div>
-        <label
-          htmlFor="currentRole"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Current Role <span className="text-red-500">*</span>
-        </label>
-        <input
+      <FormField
+        label="Current Role"
+        required
+        htmlFor="currentRole"
+        error={errors.currentRole?.message}
+      >
+        <FormInput
           id="currentRole"
           type="text"
           {...register("currentRole")}
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.currentRole ? "border-red-500" : "border-gray-300"
-          }`}
-          aria-invalid={errors.currentRole ? "true" : "false"}
-          aria-describedby={
-            errors.currentRole ? "currentRole-error" : undefined
-          }
+          error={!!errors.currentRole}
         />
-        {errors.currentRole && (
-          <p
-            id="currentRole-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
-            {errors.currentRole.message}
-          </p>
-        )}
-      </div>
+      </FormField>
 
-      <div>
-        <label
-          htmlFor="noticePeriod"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Notice Period <span className="text-red-500">*</span>
-        </label>
-        <select
+      <FormField
+        label="Notice Period"
+        required
+        htmlFor="noticePeriod"
+        error={errors.noticePeriod?.message}
+      >
+        <SelectField
           id="noticePeriod"
           {...register("noticePeriod")}
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.noticePeriod ? "border-red-500" : "border-gray-300"
-          }`}
-          aria-invalid={errors.noticePeriod ? "true" : "false"}
-          aria-describedby={
-            errors.noticePeriod ? "noticePeriod-error" : undefined
-          }
+          error={!!errors.noticePeriod}
         >
           <option value="">Select notice period</option>
           {NOTICE_PERIODS.map((period) => (
@@ -225,34 +190,24 @@ export function Step2ProfessionalDetails() {
               {period}
             </option>
           ))}
-        </select>
-        {errors.noticePeriod && (
-          <p
-            id="noticePeriod-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
-            {errors.noticePeriod.message}
-          </p>
-        )}
-      </div>
+        </SelectField>
+      </FormField>
 
       <div className="flex justify-between pt-4">
-        <button
+        <Button
           type="button"
+          variant="outline"
           onClick={goToPreviousStep}
-          className="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
         >
           Previous
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
           disabled={isSubmitting || !isValid}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           aria-disabled={isSubmitting || !isValid}
         >
           {isSubmitting ? "Saving..." : "Next"}
-        </button>
+        </Button>
       </div>
     </form>
   );

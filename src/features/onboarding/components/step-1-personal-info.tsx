@@ -9,6 +9,9 @@ import {
 import { useApplicationStore } from "@/lib/store/application-store";
 import { useStepNavigation } from "../hooks/use-step-navigation";
 import { useEffect } from "react";
+import { FormField, FormInput } from "@/components/ui/form-field";
+import { SelectField } from "@/components/ui/select-field";
+import { Button } from "@/components/ui/button";
 
 const COUNTRIES = [
   "United States",
@@ -30,7 +33,6 @@ export function Step1PersonalInfo() {
     handleSubmit,
     formState: { errors, isSubmitting, isValid },
     setValue,
-    watch,
   } = useForm<PersonalInfoFormData>({
     resolver: zodResolver(personalInfoSchema),
     mode: "onChange",
@@ -59,105 +61,58 @@ export function Step1PersonalInfo() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
-      <div>
-        <label
-          htmlFor="fullName"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Full Name <span className="text-red-500">*</span>
-        </label>
-        <input
+      <FormField
+        label="Full Name"
+        required
+        htmlFor="fullName"
+        error={errors.fullName?.message}
+      >
+        <FormInput
           id="fullName"
           type="text"
           {...register("fullName")}
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.fullName ? "border-red-500" : "border-gray-300"
-          }`}
-          aria-invalid={errors.fullName ? "true" : "false"}
-          aria-describedby={errors.fullName ? "fullName-error" : undefined}
+          error={!!errors.fullName}
         />
-        {errors.fullName && (
-          <p
-            id="fullName-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
-            {errors.fullName.message}
-          </p>
-        )}
-      </div>
+      </FormField>
 
-      <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Email <span className="text-red-500">*</span>
-        </label>
-        <input
+      <FormField
+        label="Email"
+        required
+        htmlFor="email"
+        error={errors.email?.message}
+      >
+        <FormInput
           id="email"
           type="email"
           {...register("email")}
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.email ? "border-red-500" : "border-gray-300"
-          }`}
-          aria-invalid={errors.email ? "true" : "false"}
-          aria-describedby={errors.email ? "email-error" : undefined}
+          error={!!errors.email}
         />
-        {errors.email && (
-          <p
-            id="email-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
-            {errors.email.message}
-          </p>
-        )}
-      </div>
+      </FormField>
 
-      <div>
-        <label
-          htmlFor="phone"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Phone Number <span className="text-red-500">*</span>
-        </label>
-        <input
+      <FormField
+        label="Phone Number"
+        required
+        htmlFor="phone"
+        error={errors.phone?.message}
+      >
+        <FormInput
           id="phone"
           type="tel"
           {...register("phone")}
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.phone ? "border-red-500" : "border-gray-300"
-          }`}
-          aria-invalid={errors.phone ? "true" : "false"}
-          aria-describedby={errors.phone ? "phone-error" : undefined}
+          error={!!errors.phone}
         />
-        {errors.phone && (
-          <p
-            id="phone-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
-            {errors.phone.message}
-          </p>
-        )}
-      </div>
+      </FormField>
 
-      <div>
-        <label
-          htmlFor="country"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Country <span className="text-red-500">*</span>
-        </label>
-        <select
+      <FormField
+        label="Country"
+        required
+        htmlFor="country"
+        error={errors.country?.message}
+      >
+        <SelectField
           id="country"
           {...register("country")}
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.country ? "border-red-500" : "border-gray-300"
-          }`}
-          aria-invalid={errors.country ? "true" : "false"}
-          aria-describedby={errors.country ? "country-error" : undefined}
+          error={!!errors.country}
         >
           <option value="">Select a country</option>
           {COUNTRIES.map((country) => (
@@ -165,29 +120,18 @@ export function Step1PersonalInfo() {
               {country}
             </option>
           ))}
-        </select>
-        {errors.country && (
-          <p
-            id="country-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
-            {errors.country.message}
-          </p>
-        )}
-      </div>
+        </SelectField>
+      </FormField>
 
       <div className="flex justify-end pt-4">
-        <button
+        <Button
           type="submit"
           disabled={isSubmitting || !isValid}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           aria-disabled={isSubmitting || !isValid}
         >
           {isSubmitting ? "Saving..." : "Next"}
-        </button>
+        </Button>
       </div>
     </form>
   );
 }
-
